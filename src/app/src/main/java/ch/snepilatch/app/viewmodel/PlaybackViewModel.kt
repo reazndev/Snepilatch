@@ -2335,6 +2335,11 @@ class PlaybackViewModel : ViewModel() {
 
     fun addTrackToPlaylist(playlistId: String, trackUri: String) { addTracksToPlaylist(playlistId, listOf(trackUri)) }
 
+    fun addTracksToPlaylists(playlistIds: List<String>, trackUris: List<String>) {
+        if (playlistIds.isEmpty() || trackUris.isEmpty()) return
+        playlistIds.forEach { addTracksToPlaylist(it, trackUris) }
+    }
+
     /**
      * Add many tracks to a playlist in a single API call. Used by the detail
      * header's "Add to Playlist" action when the user adds an entire album,
@@ -2349,7 +2354,7 @@ class PlaybackViewModel : ViewModel() {
     }
 
     // Tracks pending playlist picker. Always treated as a list so the same
-    // picker dialog covers single-track adds (from TrackRow) and bulk adds
+    // picker sheet covers single-track adds (from TrackRow) and bulk adds
     // (from the album/playlist detail header).
     val pendingPlaylistTrackUris = MutableStateFlow<List<String>>(emptyList())
     val showPlaylistPicker = MutableStateFlow(false)

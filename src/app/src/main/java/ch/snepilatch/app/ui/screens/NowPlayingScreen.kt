@@ -64,8 +64,9 @@ import ch.snepilatch.app.viewmodel.PlaybackViewModel
 import ch.snepilatch.app.viewmodel.canRemovePlayingFromPlaylist
 import ch.snepilatch.app.viewmodel.removePlayingFromPlaylist
 import ch.snepilatch.app.logic.shared.shareSpfyUri
+import ch.snepilatch.app.logic.shared.spfyId
 import ch.snepilatch.app.ui.shared.LikeToggleButton
-import ch.snepilatch.app.ui.shared.PlaylistPickerDialog
+import ch.snepilatch.app.ui.shared.PlaylistPickerSheet
 import ch.snepilatch.app.ui.shared.PlayerAction
 import ch.snepilatch.app.ui.shared.PlayerOverlay
 import ch.snepilatch.app.ui.shared.rememberPlayerActions
@@ -811,10 +812,12 @@ fun NowPlayingScreen(
 
     if (showPlaylistPicker) {
         val libraryItems by libraryVm.library.collectAsState()
-        PlaylistPickerDialog(
+        PlaylistPickerSheet(
             playlists = libraryItems.filter { it.type == "playlist" },
-            onPick = { playlist ->
-                track?.uri?.let { uri -> vm.addTrackToPlaylist(playlist.uri.removePrefix("spotify:playlist:"), uri) }
+            onSave = { selectedPlaylists ->
+                track?.uri?.let { uri ->
+                    vm.addTracksToPlaylists(selectedPlaylists.map { spfyId(it.uri) }, listOf(uri))
+                }
                 showPlaylistPicker = false
             },
             onDismiss = { showPlaylistPicker = false },

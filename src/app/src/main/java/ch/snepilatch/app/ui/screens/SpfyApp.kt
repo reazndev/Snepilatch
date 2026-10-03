@@ -78,7 +78,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.lerp
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import ch.snepilatch.app.ui.shared.PlaylistPickerDialog
+import ch.snepilatch.app.ui.shared.PlaylistPickerSheet
 import ch.snepilatch.app.logic.shared.spfyId
 import ch.snepilatch.app.logic.shared.JamHolder
 import ch.snepilatch.app.ui.shared.JamBanner
@@ -322,14 +322,12 @@ fun SpfyApp(vm: PlaybackViewModel) {
         val showPicker by vm.showPlaylistPicker.collectAsState()
         if (showPicker) {
             val library by libraryVm.library.collectAsState()
-            PlaylistPickerDialog(
+            PlaylistPickerSheet(
                 playlists = library.filter { it.type == "playlist" },
-                onPick = { playlist ->
+                onSave = { selectedPlaylists ->
                     val trackUris = vm.pendingPlaylistTrackUris.value
-                    if (trackUris.isNotEmpty()) {
-                        vm.addTracksToPlaylist(spfyId(playlist.uri), trackUris)
-                        vm.showPlaylistPicker.value = false
-                    }
+                    vm.addTracksToPlaylists(selectedPlaylists.map { spfyId(it.uri) }, trackUris)
+                    vm.showPlaylistPicker.value = false
                 },
                 onDismiss = { vm.showPlaylistPicker.value = false },
             )
